@@ -1,0 +1,97 @@
+# Get Rows and columns for Grid
+rows = int(input("Enter Number Rows \n"))
+columns = int(input("Enter Number Columns \n"))
+
+# Create Grid
+Grid = []
+for i in range(rows):
+    Grid.append(input("Enter Grid for Row " + str(i+1) + " :"))
+
+
+    print("\n")
+
+# Print Grid
+for i in range(rows):
+    print(Grid[i].replace("\r", "").replace("1", "\u274E").replace("0", "\u274C"))
+
+
+# Get Start and End Point
+start_point = eval(input("Start point as [x,y]\n"))
+end_point = eval(input("End point as [x,y]\n"))
+
+
+Global_List = [[start_point]]
+
+point_list = [start_point]
+
+def pointcheck(p):
+    if columns + 1 > p[0] > 0 and rows + 1 > p[1] > 0:
+        return (Grid[int(p[1])-1])[int(p[0])-1] == '1'
+    else:
+        return False
+
+def split(L):
+    global Global_List
+    global rows
+    global columns
+    global point_list
+    Global_List.pop(Global_List.index(L))
+    point = L[-1]
+    point_up = [point[0],point[1]-1]
+    point_down = [point[0],point[1]+1]
+    point_left = [point[0]-1,point[1]]
+    point_right = [point[0]+1,point[1]]
+    if pointcheck(point_up) and point_up not in point_list:
+        L.append(point_up)
+        Global_List.append(L.copy())
+        point_list.append(point_up)
+        L.pop(-1)
+    if pointcheck(point_down) and point_down not in point_list:
+        L.append(point_down)
+        Global_List.append(L.copy())
+        point_list.append(point_down)
+        L.pop(-1)
+    if pointcheck(point_left) and point_left not in point_list:
+        L.append(point_left)
+        Global_List.append(L.copy())
+        point_list.append(point_left)
+        L.pop(-1)
+    if pointcheck(point_right) and point_right not in point_list:
+        L.append(point_right)
+        Global_List.append(L.copy())
+        point_list.append(point_right)
+        L.pop(-1)
+
+solved = False
+
+if pointcheck(start_point) and pointcheck(end_point):
+    for a in range(rows*columns):
+        for i in Global_List.copy():
+            split(i)
+        for i in Global_List:
+            if end_point in i:
+                path = i
+                solved = True
+                break
+        if solved:
+            break
+    if solved:
+
+# Path Length
+        print(len(path))
+        print(path)
+# Mark Path on grid
+        for n in path:
+            colstr = int(n[0])
+            rowstr = int(n[1])
+            str = Grid[rowstr-1]
+            str = str[:colstr-1] + "\u26AB" + str[colstr:]
+            Grid[rowstr-1] = str
+# Print marked Path on grid
+        for i in range(rows):
+            print(Grid[i].replace("\r", "").replace("1", "\u274E").replace("0", "\u274C"))
+
+    else:
+        print('this maze cannot be solved')
+else:
+    print('invalid start/end points')
